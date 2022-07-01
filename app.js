@@ -7,8 +7,8 @@ const app = express();
 app.use(express.json());
 
 //require route
-app.use('/vi/', require("./routes/user.js"))
-app.use('/vi/', require("./routes/task.js"))
+app.use('/vi/', require("./routes/auth.js"))
+app.use('/vi/', require("./routes/admin.js"))
 
 app.use('/', (req, res) => {
     res.send("Home Page For FittedNG");

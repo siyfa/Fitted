@@ -27,11 +27,10 @@ exports.createTask = async(req, res) => {
 exports.getTask = async(req, res)=> {
     try{
         const task = await Task.findById(req.params.taskId);
-
         if(task){
-            res.status(201).json(task)
+            res.status(200).json(task)
         }else{
-            res.status(404).json("No task found");
+            res.status(404).json("There is no task at that id");
         }
     }
     catch(err){
@@ -45,7 +44,7 @@ exports.getTasks = async (req,res) => {
             if(err){
                 return res.status(500).json("An error has occured");
             }else{
-                return res.status(201).json(tasks)
+                return res.status(200).json(tasks)
             }
         })
     }
@@ -58,14 +57,14 @@ exports.deleteTask = async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if(!task){
-            return res.status(404).json("Task not found")
+            return res.status(204).json("Task not found")
         }else{
             await Task.deleteOne({id: req.params.id}).exec((err, task)=> {
                 if(err){
                     console.log(err)
                     return res.status(500).json("An error occured");
                 }else{
-                    return res.status(204)
+                    return res.status(204).json("Deleted successfully");
                 }
             })
         }
@@ -82,7 +81,7 @@ exports.deleteTasks = async (req, res) => {
                 console.log(err)
                 return res.status(500).json("An error occured");
             }else{
-                return res.status(204)
+                return res.status(204).json("Successfully deleted all tasks")
             }
         })
     }
@@ -93,7 +92,7 @@ exports.deleteTasks = async (req, res) => {
 //Edit task
 exports.editTask = async (req, res) => {
     try{
-        const task = await Task.findById(req.params.id);
+        const task = await Task.findById(req.params.taskId);
         if(!task){
             return res.status(404).json("There is no task at that id")
         }else{
@@ -101,7 +100,7 @@ exports.editTask = async (req, res) => {
                 if(err){
                     console.log(err)
                 }else{
-                    res.status(204)
+                    res.status(204).json("Saved")
                 }
             })
         }
@@ -120,10 +119,14 @@ exports.addTasks = async (req, res) => {
      ]
 
     try{
-        const tasks = Task.issertMany(tasksDetails);
-        tasks.save((err, tasks) => {
-            res.status(202).json(tasks._id)
-        })
+        await Task.insertMany(tasksDetails)
+            .then((err, tasks) => {
+                if(err){
+                    console.log(err)
+                }else{
+                    res.status(201).json(tasks)
+                }
+            })
     }
     catch(err){
         console.log(err)

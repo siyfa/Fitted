@@ -13,7 +13,7 @@ exports.createUser = async (req, res) => {
                 return res.status(201).json("User with existing email already exist.")
             }
         })
-        
+
         const newUser = {
             name: name,
             email: email,
@@ -49,6 +49,12 @@ exports.userId = async (req, res) => {
 }
 
 exports.getUser = async (req, res) => {
-    console.log("User", req.user)
-    res.send("Testing");
+    await User.findById(req.params.userId).exec((err, user) => {
+        if(err){
+            console.log(err)
+            return
+        }else{
+            return res.status(201).json(user);
+        }
+    })
 }
